@@ -2,14 +2,16 @@ package com.example.demo.domain;
 
 
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "userinfotbl")
+@DynamicInsert
 public class About {
 
     //@GeneratedValue(strategy = GenerationType.IDENTITY) 아이디를 자동생성 안할거라 주석
@@ -19,7 +21,9 @@ public class About {
     private String usernm;
     private String useremail;
     private String userpw;
+    @ColumnDefault("N")
     private String manageyn;
+    @ColumnDefault("Y")
     private String usedyn;
     @CreationTimestamp // INSERT 시 자동으로 값을 채워줌
     @Column(name = "frstinptymd")

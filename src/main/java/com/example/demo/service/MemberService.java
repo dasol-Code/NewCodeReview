@@ -4,8 +4,6 @@ import com.example.demo.domain.About;
 import com.example.demo.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-
 import java.util.List;
 import java.util.Optional;
 

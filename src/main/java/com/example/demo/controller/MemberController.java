@@ -27,7 +27,10 @@ public class MemberController {
 
     @PostMapping(value = "/member/new")
     public String create(@RequestBody About about){
-       //About about = new About();
+        // 이렇게 하면 안될것같고.. 디폴트값으로 about 도메인에서 값을 넣어주는 방식으로해야할듯...
+        // 관리자랑, 사용여부는 도메인 about 클래스에 디폴트값설정해둠
+        about.setFrstinptuserid(about.getUserid());
+        about.setLastupduserid(about.getUserid());
        memberService.join(about);
        return "success";
     }

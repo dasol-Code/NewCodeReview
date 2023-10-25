@@ -57,22 +57,12 @@ export default {
     useremail: "",
     userId_rules: [
       (value) => {
-        if (value.length > 50) return "ID가 너무 깁니다.";
-      },
-      (value) => {
         const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-        if (korean.test(value)) {
-          return "한글을 입력하지마세요";
-        }
+        if (korean.test(value)) return "ID에는 한글을 입력할수 없습니다.";
+        if (value.length > 50) return "ID는 50자를 넘어갈수없습니다.";
       },
     ],
     userPass_rules: [
-      // (value) => {
-      //   const validatePassword =
-      //     /^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]).{8,16}$/;
-      //   if (!validatePassword.test(value))
-      //     return "비밀번호는 영문, 숫자, 특수문자 만 입력 가능합니다.";
-      // },
       (value) => {
         if (value.length > 8) return "비밀번호는 8자리만 입력해주세요.";
       },
@@ -80,9 +70,7 @@ export default {
     userNmae_rules: [
       (value) => {
         const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-        if (!korean.test(value)) {
-          return "한글만 입력하세요.";
-        }
+        if (!korean.test(value)) return "한글만 입력하세요.";
       },
     ],
     userEmail_rules: [
@@ -90,34 +78,47 @@ export default {
         const validateEmail =
           /^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\.[A-Za-z0-9\\-]+/;
         if (!validateEmail.test(value))
-          return "이메일 형식이 일치하지않습니다.";
+          return "올바른 이메일 형식이 일치하지않습니다.";
       },
     ],
   }),
   methods: {
+    koreanValueCheck: function (value) {
+      const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+      return korean.test(value);
+    },
+    emailCheck: function (value) {
+      const validateEmail =
+        /^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\.[A-Za-z0-9\\-]+/;
+      return validateEmail.test(value);
+    },
     onMoveRegister: function () {
-      if (this.userid === "") {
-        alert("ID를 입력하세요");
+      if (this.userid === "" || this.koreanValueCheck(this.userid)) {
+        alert("ID를 다시 확인해주세요");
         return;
       } else if (this.userpw === "") {
         alert("비밀번호를 입력하세요");
         return;
       } else if (this.userpw !== this.userpwCheck) {
-        alert("비밀번호 확인과 일치하지않습니다.");
+        alert("비밀번호가 일치하지않습니다.");
         return;
-      } else if (this.usernm === "") {
-        alert("이름을 입력해주세요");
+      } else if (this.usernm === "" || !this.koreanValueCheck(this.usernm)) {
+        alert("이름이 올바르지 않습니다.");
         return;
-      } else if (this.useremail === "") {
-        alert("이메일을 입력해주세요");
+      } else if (this.useremail === "" || !this.emailCheck(this.useremail)) {
+        alert("이메일이 올바르지 않습니다.");
         return;
       }
       axios
-        .post("/main/login", {
-          // userId: this.userId,
-          // userPass: this.userPass,
+        .post("/member/new", {
+          userid: this.userid,
+          userpw: this.userpw,
+          usernm: this.usernm,
+          useremail: this.useremail,
         })
-        .then((r) => {})
+        .then((r) => {
+          console.log(r);
+        })
         .catch((e) => {
           throw new Error(e);
         });
