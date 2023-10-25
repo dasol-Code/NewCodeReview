@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="tag">
-      <h1><small></small>CODE REVIEW TEST<small></small></h1>
+      <h1><small></small>CODE REVIEW<small></small></h1>
     </div>
   </v-container>
 </template>
