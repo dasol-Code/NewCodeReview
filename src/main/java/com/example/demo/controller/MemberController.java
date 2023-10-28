@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.domain.About;
 import com.example.demo.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,13 +57,10 @@ public class MemberController {
     }*/
 
     @PostMapping("/member/login")
-    public Optional<About> loginId(@RequestBody About about){
-        Optional<About> findOne = memberService.findOne(about);
-        return findOne;
-        /*if(memberService.login(about)){
-            return "success";
-        }
-        return "fail";*/
+    public ResponseEntity<About> loginId(@RequestBody About about){
+        String token = memberService.login(about);
+        about.setToken(token);
+        return ResponseEntity.ok().body(about);
     }
 
     @PostMapping("/member/update")

@@ -102,7 +102,7 @@ export default {
     let list = [
       { title: "Home", to: "/" },
       { title: "회원가입", to: "/register" },
-      { title: "회원정보수정", to: "/memberedit" },
+      { title: "회원정보수정", to: " edit" },
       { title: "회원관리", to: "/member" },
     ];
     this.items = list;

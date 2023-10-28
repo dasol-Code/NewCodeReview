@@ -2,6 +2,8 @@ package com.example.demo.domain;
 
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -12,7 +14,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "userinfotbl")
 @DynamicInsert
+@Setter
+@Getter
 public class About {
+    private String token;
 
     //@GeneratedValue(strategy = GenerationType.IDENTITY) 아이디를 자동생성 안할거라 주석
     private int ser;

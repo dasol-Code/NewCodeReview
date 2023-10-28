@@ -2,14 +2,22 @@ package com.example.demo.service;
 
 import com.example.demo.domain.About;
 import com.example.demo.repository.MemberRepository;
+import com.example.demo.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.crypto.SecretKey;
 import java.util.List;
 import java.util.Optional;
 
 @Transactional
 @Service
 public class MemberService {
+
+    @Value("${jwt.secret}")
+    private String secretKey;
+    private Long expireTime = 1000 * 60 * 60L; // 1시간
 
     private final MemberRepository memberRepository;
 
@@ -27,7 +35,7 @@ public class MemberService {
         return memberRepository.findAll();
     }
     //익셉션...
-    public boolean login(About about){
+    public String login(About about){
         About findUser = memberRepository.findLogin(about.getUserid());
 
         if(findUser == null){
@@ -37,7 +45,7 @@ public class MemberService {
         if(!findUser.getUserpw().equals(about.getUserpw())){
             throw new IllegalStateException("패스워드가 맞지 않습니다..");
         }
-        return true;
+        return JwtUtil.createJwt(about.getUsernm(), secretKey, expireTime);
     }
 
     public void updateMember(About about){
