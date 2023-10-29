@@ -25,36 +25,24 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    //@GetMapping(value="/member")
-    //public String RegisterForm(){
-    //   return "success";
-    //}
-
     @PostMapping(value = "/member/new")
     public String create(@RequestBody About about){
        memberService.join(about);
        return "success";
     }
 
-    @PostMapping("/about")
-    public List<About> test(Model model){
+    @PostMapping("/member/findAll")
+    public List<About> selectMemberAll(){
         List<About> memberList = memberService.findAll();
-        //model.addAttribute("testname",testName);
-        //String nameList = memberList.get(0).getName();
         return memberList;
     }
 
-    @PostMapping("/info")
+    @PostMapping("/member/info")
     public Optional<About> findByInfo(@RequestBody About about){
+        log.debug("stop");
         Optional<About> memberInfo = memberService.findByInfo(about);
-        //model.addAttribute("testname",testName);
-        //String nameList = memberList.get(0).getName();
         return memberInfo;
     }
-    /*@GetMapping("/member/login")
-    public String login(){
-      return "login";
-    }*/
 
     @PostMapping("/member/login")
     public ResponseEntity<Map<String,Object>> loginId(@RequestBody About about){
@@ -70,24 +58,16 @@ public class MemberController {
     }
 
     @PostMapping("/member/update")
-    public ResponseEntity<About> updateMember(@RequestBody About about){
-        memberService.updateMember(about);
-        return ResponseEntity.ok(about);
+    public ResponseEntity<About> updateMember(@RequestBody About param){
+        About updateUser = memberService.updateMember(param);
+        return new ResponseEntity<>(updateUser,HttpStatus.OK);
     }
 
     @PostMapping("/member/delete")
-    public ResponseEntity<About> deleteMember(@RequestBody About about){
-        memberService.deleteMember(about);
-        return ResponseEntity.ok(about);
+    public ResponseEntity<Integer> deleteMember(@RequestBody About about){
+        int reuslt = memberService.deleteMember(about);
+        return  new ResponseEntity<>(reuslt,HttpStatus.OK);
     }
-
-    // 이젠 userpw가 PK가 아님 updateMember 메소드에서 userpw도 수정할 수 있음 (일단 남겨둠 해당 메소드 삭제 예정)_2023.10.24_표세빈
-    @PostMapping("/member/chgPwd")
-    public ResponseEntity<About> updatePassword(@RequestBody About about){
-        memberService.updatePassword(about);
-        return ResponseEntity.ok(about);
-    }
-
     public class MemberForm{
         private String Id;
 

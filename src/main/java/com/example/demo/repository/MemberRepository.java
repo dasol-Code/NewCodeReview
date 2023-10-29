@@ -14,13 +14,8 @@ public interface MemberRepository {
     About findLogin(String userid);
     List<About> findAll();
 
-    //Optional<About> findByInfo(String id);
-
     void delete(About about);
 
     void update(About about);
-
-    // 이젠 userpw가 PK가 아님 위에 메소드에서 userpw도 수정할 수 있음 (일단 남겨둠 해당 메소드 삭제 예정)_2023.10.24_표세빈
-    void updatePassword(About about);
 
 }

@@ -37,7 +37,6 @@ public class MemberService {
     public List<About> findAll(){
         return memberRepository.findAll();
     }
-    //익셉션...
     public Map<String,Object> login(@NotNull About about) throws Exception{
         Map<String,Object> result = new HashMap<>();
         About findUser = memberRepository.findLogin(about.getUserid());
@@ -47,53 +46,31 @@ public class MemberService {
         if(!findUser.getUserpw().equals(about.getUserpw())){
             throw new IllegalStateException("패스워드가 맞지 않습니다..");
         }
-        if(findUser.getUsedyn() == "Y"){
+        if("N".equals(findUser.getUsedyn())){
             throw new IllegalStateException("삭제된 회원입니다.");
         }
         result.put("token",JwtUtil.createJwt(about.getUsernm(), secretKey, expireTime));
+        result.put("userId",findUser.getUserid());
         result.put("userRight", findUser.getManageyn());
         return result;
     }
 
-    public void updateMember(About about){
+    public About updateMember(About about){
         About findUser = memberRepository.findLogin(about.getUserid());
-
         if(findUser == null){
             throw new IllegalStateException("해당 아이디가 존재하지 않습니다.");
         }
-
-        if(!findUser.getUserpw().equals(about.getUserpw())){
-            throw new IllegalStateException("패스워드가 맞지 않습니다..");
-        }
-
         memberRepository.update(about);
+        return memberRepository.findLogin(about.getUserid());
     }
 
-    public void deleteMember(About about){
+    public Integer deleteMember(About about){
         About findUser = memberRepository.findLogin(about.getUserid());
-
         if(findUser == null){
             throw new IllegalStateException("해당 아이디가 존재하지 않습니다.");
-        }
-
-        if(!findUser.getUserpw().equals(about.getUserpw())){
-            throw new IllegalStateException("패스워드가 맞지 않습니다..");
         }
         memberRepository.delete(about);
-    }
-
-    // 이젠 userpw가 PK가 아님 위에 메소드에서 userpw도 수정할 수 있음 (일단 남겨둠 해당 메소드 삭제 예정)_2023.10.24_표세빈
-    public void updatePassword(About about){
-        About findUser = memberRepository.findLogin(about.getUserid());
-
-        if(findUser == null){
-            throw new IllegalStateException("해당 아이디가 존재하지 않습니다.");
-        }
-
-        if(!findUser.getUserpw().equals(about.getUserpw())){
-            throw new IllegalStateException("패스워드가 맞지 않습니다..");
-        }
-        memberRepository.updatePassword(about);
+        return 1;
     }
 
     //Optional 겁나 까다로움...
@@ -112,7 +89,6 @@ public class MemberService {
     }
     public Optional<About> findByInfo(About about){
         Optional<About> findUser =  memberRepository.findById(about.getUserid());
-
         return  findUser;
     }
     private void validateDuplicateMember(About about) {

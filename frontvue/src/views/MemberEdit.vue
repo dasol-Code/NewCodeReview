@@ -32,8 +32,22 @@
               :rules="userEmail_rules"
               label="이메일주소"
             ></v-text-field>
-            <v-btn color="success" type="submit" block class="mt-2">수정</v-btn>
-            <v-btn color="error" type="submit" block class="mt-2">삭제</v-btn>
+            <v-btn
+              color="success"
+              type="submit"
+              block
+              class="mt-2"
+              @click="onMoveUpdate()"
+              >수정</v-btn
+            >
+            <v-btn
+              color="error"
+              type="submit"
+              block
+              class="mt-2"
+              @click="onMoveDelete()"
+              >삭제</v-btn
+            >
           </v-form>
         </v-sheet>
       </v-card>
@@ -76,6 +90,21 @@ export default {
       },
     ],
   }),
+  mounted() {
+    axios
+      .post("/member/info", {
+        userid: this.$store.state.userId,
+      })
+      .then(({ data }) => {
+        console.log(data);
+        this.userid = data.userid;
+        this.usernm = data.usernm;
+        this.useremail = data.useremail;
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
+  },
   methods: {
     koreanValueCheck: function (value) {
       const korean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
@@ -86,7 +115,7 @@ export default {
         /^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\.[A-Za-z0-9\\-]+/;
       return validateEmail.test(value);
     },
-    onMoveRegister: function () {
+    onMoveUpdate: function () {
       if (this.userid === "" || this.koreanValueCheck(this.userid)) {
         alert("ID를 다시 확인해주세요");
         return;
@@ -104,7 +133,7 @@ export default {
         return;
       }
       axios
-        .post("/member/new", {
+        .post("/member/update", {
           userid: this.userid,
           userpw: this.userpw,
           usernm: this.usernm,
@@ -112,14 +141,33 @@ export default {
           lastupduserid: this.userid,
           frstinptuserid: this.userid,
         })
-        .then((r) => {
-          console.log(r);
-          if (r.data === "success") {
+        .then(({ data }) => {
+          if (data.userid) {
+            alert("수정완료되었습니다.");
             this.$router.push("/");
+            this.$router.go();
           }
         })
         .catch((e) => {
-          alert("이미 등록된 회원ID 입니다.");
+          throw new Error(e);
+        });
+    },
+    onMoveDelete: function () {
+      axios
+        .post("/member/delete", {
+          userid: this.userid,
+        })
+        .then(({ data }) => {
+          if (data === 1) {
+            window.localStorage.removeItem("token");
+            window.localStorage.removeItem("userRight");
+            this.$store.commit("delUserInfo");
+            alert("삭제되었습니다.");
+            this.$router.push("/");
+            this.$router.go();
+          }
+        })
+        .catch((e) => {
           throw new Error(e);
         });
     },

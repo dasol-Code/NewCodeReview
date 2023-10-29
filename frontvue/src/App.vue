@@ -133,10 +133,10 @@ export default {
   mounted() {
     const token = this.$store.state.token;
     const userRight = this.$store.state.userRight;
+    console.log(token);
     // 로그인 상태에 따른 메뉴 구분
     let viewList = [];
     viewList.push({ title: "Home", to: "/" });
-    console.log(token);
     if (token) {
       this.loginBtn = false;
       this.logoutBtn = true;
@@ -165,8 +165,9 @@ export default {
           if (data.token) {
             window.localStorage.setItem("token", data.token);
             window.localStorage.setItem("userRight", data.userRight);
+            window.localStorage.setItem("userId", data.userId);
+            this.$router.go();
             param.value = false;
-            location.reload();
           } else {
             alert(data.errorMsg);
           }
@@ -183,7 +184,10 @@ export default {
     setLogout: function (param) {
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("userRight");
-      location.reload();
+      window.localStorage.removeItem("userId");
+      this.$store.commit("delUserInfo");
+      this.$router.push("/");
+      this.$router.go();
       param.value = false;
     },
   },

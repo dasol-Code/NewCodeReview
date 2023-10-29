@@ -28,7 +28,7 @@ public class AuthenticationConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/", "/member/new", "/member/login").permitAll()
+                .antMatchers("/", "/member/new", "/member/login","/member/info","/member/update","/member/delete","/member/findAll").permitAll()
                 .antMatchers(HttpMethod.POST, "/**").authenticated()
                 .and()
                 .sessionManagement()

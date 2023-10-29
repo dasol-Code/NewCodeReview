@@ -39,9 +39,6 @@ public class About {
     private LocalDateTime lastupdymd = LocalDateTime.now();;
     private String lastupduserid;
 
-    @Transient //DB에는 없는 컬럼이지만 엔티티에는 필요한 모델?VO? 설정
-    private String chgpassword;
-
     public int getSer() {
         return ser;
     }
@@ -111,12 +108,4 @@ public class About {
         return lastupduserid;
     }
     public void setLastupduserid(String lastupduserid) { this.lastupduserid = lastupduserid; }
-
-    public String getChgpassword() {
-        return chgpassword;
-    }
-
-    public void setChgpassword(String chgpassword) {
-        this.chgpassword = chgpassword;
-    }
 }

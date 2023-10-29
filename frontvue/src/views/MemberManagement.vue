@@ -13,7 +13,7 @@
             <v-list-item
               v-bind="props"
               prepend-icon="mdi-account-circle"
-              :title="item.id"
+              :title="item.userid"
             ></v-list-item>
           </template>
           <v-list-item prepend-icon="mdi-file-outline">
@@ -33,27 +33,19 @@
                     <tbody>
                       <tr>
                         <td>ID</td>
-                        <td>{{ item.id }}</td>
+                        <td>{{ item.userid }}</td>
                       </tr>
                       <tr>
                         <td>이름</td>
-                        <td>{{ item.name }}</td>
+                        <td>{{ item.usernm }}</td>
                       </tr>
                       <tr>
-                        <td>나이</td>
-                        <td>{{ item.age }}</td>
+                        <td>비밀번호</td>
+                        <td>{{ item.userpw }}</td>
                       </tr>
                       <tr>
-                        <td>생일</td>
-                        <td>{{ item.birdth }}</td>
-                      </tr>
-                      <tr>
-                        <td>주소</td>
-                        <td>{{ item.adr }}</td>
-                      </tr>
-                      <tr>
-                        <td>전화번호</td>
-                        <td>{{ item.phone }}</td>
+                        <td>이메일</td>
+                        <td>{{ item.useremail }}</td>
                       </tr>
                     </tbody>
                   </v-table>
@@ -75,7 +67,14 @@
                   <v-card-text> 수정하시겠습니까? </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="확인" @click="isActive.value = false"></v-btn>
+                    <v-btn
+                      text="확인"
+                      @click="
+                        setUserUpdateDel(
+                          (param = { isActive, userId: item.userid })
+                        )
+                      "
+                    ></v-btn>
                     <v-btn text="취소" @click="isActive.value = false"></v-btn>
                   </v-card-actions>
                 </v-card>
@@ -92,7 +91,14 @@
                   <v-card-text> 정말 삭제하시겠습니까? </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="확인" @click="isActive.value = false"></v-btn>
+                    <v-btn
+                      text="확인"
+                      @click="
+                        setUserUpdateDel(
+                          (param = { isActive, userId: item.userid })
+                        )
+                      "
+                    ></v-btn>
                     <v-btn text="취소" @click="isActive.value = false"></v-btn>
                   </v-card-actions>
                 </v-card>
@@ -105,16 +111,10 @@
   </v-container>
 </template>
 <script>
+import axios from "axios";
 export default {
   data: () => ({
-    infoType: [
-      "아이디 :",
-      "이름 :",
-      "나이 :",
-      "생일 :",
-      "주소 :",
-      "핸드폰번호 :",
-    ],
+    infoType: ["아이디 :", "이름 :", "비밀번호 :", "이메일주소 :"],
     open: ["Users"],
     cruds: [
       ["Read", "mdi-file-outline"],
@@ -124,33 +124,22 @@ export default {
     userList: "",
   }),
   mounted() {
-    let list = [
-      {
-        id: "유저1",
-        name: "나해준",
-        age: "30",
-        birdth: "920630",
-        adr: "수원",
-        phone: "010-xxx-0001",
-      },
-      {
-        id: "유저2",
-        name: "장훈",
-        age: "20",
-        birdth: "950812",
-        adr: "서울",
-        phone: "010-xxx-0002",
-      },
-      {
-        id: "유저3",
-        name: "신익수",
-        age: "22",
-        birdth: "920930",
-        adr: "남천동",
-        phone: "010-xxx-0003",
-      },
-    ];
-    this.userList = list;
+    axios
+      .post("/member/findAll")
+      .then(({ data }) => {
+        this.userList = data;
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
+  },
+  methods: {
+    setUserUpdateDel: function (param) {
+      console.log(param);
+      this.$store.commit("setUserId", param.userId);
+      this.$router.push("/memberedit");
+      param.isActive.value = false;
+    },
   },
 };
 </script>

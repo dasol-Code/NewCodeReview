@@ -30,38 +30,28 @@ public class NewMemberRepository implements MemberRepository {
         return em.find(About.class, userid);
     }
     public List<About> findAll(){
-        return em.createQuery("select m from About m", About.class).getResultList();
+        return em.createQuery("select m from About m where m.usedyn = :usedyn", About.class)
+                .setParameter("usedyn","Y")
+                .getResultList();
     }
 
     public void delete(About about){
-        em.createQuery("delete from About a where a.ser = :ser and a.userid = :userid")
-                .setParameter("ser", about.getSer())
+        em.createQuery("update About a set a.usedyn = :usedyn,a.lastupduserid = :lastupduserid where a.userid = :userid")
+                .setParameter("usedyn","N")
+                .setParameter("lastupduserid", about.getUserid())
                 .setParameter("userid", about.getUserid())
-                        .executeUpdate();
+                .executeUpdate();
         em.clear();
     }
     @Modifying
     public void update(About about){
-        em.createQuery("update About a set a.usernm = :usernm, a.useremail = :useremail, a.userpw = :userpw, a.lastupduserid = :lastupduserid where a.ser = :ser and a.userid = :userid")
+        em.createQuery("update About a set a.usernm = :usernm, a.useremail = :useremail, a.userpw = :userpw, a.lastupduserid = :lastupduserid where a.userid = :userid")
                 .setParameter("usernm", about.getUsernm())
                 .setParameter("useremail", about.getUseremail())
-                .setParameter("userpw", about.getChgpassword())
-                // userid로 최종수정자도 UPDATE ..?
+                .setParameter("userpw", about.getUserpw())
                 .setParameter("lastupduserid", about.getUserid())
-
-                .setParameter("ser", about.getSer())
                 .setParameter("userid", about.getUserid())
                 .executeUpdate();
         em.clear();
     }
-    
-    // 이젠 userpw가 PK가 아님 위에 메소드에서 userpw도 수정할 수 있음 (일단 남겨둠 해당 메소드 삭제 예정)_2023.10.24_표세빈
-    public void updatePassword(About about){
-        em.createQuery("update About a set a.userpw = :chgpassword where a.ser = :ser and a.userid = :userid")
-                .setParameter("chgpassword", about.getChgpassword())
-                .setParameter("userid", about.getUserid())
-                .executeUpdate();
-        em.clear();
-    }
-    //import check File
 }
