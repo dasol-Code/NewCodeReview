@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-card color="basil">
-      <v-container>
+      <v-container v-show="loginBtn">
         <v-dialog width="500">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" text="Login"> </v-btn>
@@ -17,6 +17,7 @@
                         type="text"
                         class="login__input"
                         placeholder="User name / Email"
+                        v-model="userId"
                       />
                     </div>
                     <div class="login__field">
@@ -25,12 +26,13 @@
                         type="password"
                         class="login__input"
                         placeholder="Password"
+                        v-model="userPw"
                       />
                     </div>
                     <v-card-actions>
                       <v-btn
                         class="button login__submit"
-                        @click="asd(isActive)"
+                        @click="setLogin(isActive)"
                       >
                         <span class="button__text">로그인</span>
                         <i class="button__icon fas fa-chevron-right"></i>
@@ -39,7 +41,7 @@
                     <v-card-actions>
                       <v-btn
                         class="button login__submit"
-                        @click="reg(isActive)"
+                        @click="setMemberRegister(isActive)"
                       >
                         <span class="button__text">회원가입</span>
                         <i class="button__icon fas fa-chevron-right"></i>
@@ -66,6 +68,31 @@
           </template>
         </v-dialog>
       </v-container>
+      <v-container v-show="logoutBtn">
+        <v-dialog width="500" id="logoutBtn">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" text="LogOut"> </v-btn>
+          </template>
+          <template v-slot:default="{ isActive }">
+            <v-card title="로그아웃">
+              <v-card-text> 로그아웃 하시겠습니까? </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  text="예"
+                  color="success"
+                  @click="setLogout(isActive)"
+                ></v-btn>
+                <v-btn
+                  text="아니오"
+                  color="error"
+                  @click="isActive.value = false"
+                ></v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
+      </v-container>
       <v-tabs v-model="tab" bg-color="transparent" color="basil" grow>
         <!-- <v-tab v-for="item in items" :key="item" :value="item">
           {{ item }}
@@ -88,32 +115,75 @@
     </v-main>
   </v-app>
 </template>
+4f
 <script>
-import router from "./router";
+import axios from "axios";
 export default {
   data() {
     return {
+      userId: "",
+      userPw: "",
+      loginBtn: true,
+      logoutBtn: false,
       tab: "Appetizers",
       // items: ["Appetizers", "Entrees", "Deserts", "Cocktails"], // for문으로 돌리는법
       items: "",
     };
   },
   mounted() {
-    let list = [
-      { title: "Home", to: "/" },
-      { title: "회원가입", to: "/register" },
-      { title: "회원정보수정", to: " edit" },
-      { title: "회원관리", to: "/member" },
-    ];
-    this.items = list;
+    const token = this.$store.state.token;
+    const userRight = this.$store.state.userRight;
+    // 로그인 상태에 따른 메뉴 구분
+    let viewList = [];
+    viewList.push({ title: "Home", to: "/" });
+    console.log(token);
+    if (token) {
+      this.loginBtn = false;
+      this.logoutBtn = true;
+      if (userRight === "N") {
+        viewList.push({ title: "회원정보수정", to: "/memberedit" });
+      } else {
+        viewList.push({ title: "회원관리", to: "/member" });
+      }
+    } else {
+      this.loginBtn = true;
+      this.logoutBtn = false;
+      viewList.push({ title: "회원가입", to: "/register" });
+    }
+    this.items = viewList;
   },
   methods: {
-    asd: function (param) {
-      this.$router.push("/memberedit");
+    // storgage.js Mutations 함수 등록
+    // ...mapMutations(["setLoginYn"]),
+    setLogin: function (param) {
+      axios
+        .post("/member/login", {
+          userid: this.userId,
+          userpw: this.userPw,
+        })
+        .then(({ data }) => {
+          if (data.token) {
+            window.localStorage.setItem("token", data.token);
+            window.localStorage.setItem("userRight", data.userRight);
+            param.value = false;
+            location.reload();
+          } else {
+            alert(data.errorMsg);
+          }
+        })
+        .catch((e) => {
+          throw new Error(e);
+        });
+    },
+    setMemberRegister: function (param) {
+      // 로그인창에서 회원가입 클릭시 회원가입 창으로 이동
+      this.$router.push("/register");
       param.value = false;
     },
-    reg: function (param) {
-      this.$router.push("/register");
+    setLogout: function (param) {
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("userRight");
+      location.reload();
       param.value = false;
     },
   },

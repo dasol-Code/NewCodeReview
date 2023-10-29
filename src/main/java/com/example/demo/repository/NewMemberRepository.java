@@ -1,13 +1,14 @@
 package com.example.demo.repository;
 
 import com.example.demo.domain.About;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.ui.Model;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 public class NewMemberRepository implements MemberRepository {
 
     private final EntityManager em;

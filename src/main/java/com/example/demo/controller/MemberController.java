@@ -2,16 +2,20 @@ package com.example.demo.controller;
 
 import com.example.demo.domain.About;
 import com.example.demo.service.MemberService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@Slf4j
 public class MemberController {
 
     private final MemberService memberService;
@@ -28,10 +32,6 @@ public class MemberController {
 
     @PostMapping(value = "/member/new")
     public String create(@RequestBody About about){
-        // 이렇게 하면 안될것같고.. 디폴트값으로 about 도메인에서 값을 넣어주는 방식으로해야할듯...
-        // 관리자랑, 사용여부는 도메인 about 클래스에 디폴트값설정해둠
-        about.setFrstinptuserid(about.getUserid());
-        about.setLastupduserid(about.getUserid());
        memberService.join(about);
        return "success";
     }
@@ -57,10 +57,16 @@ public class MemberController {
     }*/
 
     @PostMapping("/member/login")
-    public ResponseEntity<About> loginId(@RequestBody About about){
-        String token = memberService.login(about);
-        about.setToken(token);
-        return ResponseEntity.ok().body(about);
+    public ResponseEntity<Map<String,Object>> loginId(@RequestBody About about){
+        Map<String,Object> data = new HashMap<>();
+        try{
+            data = memberService.login(about);
+        }catch (Exception e) {
+            data.put("errorMsg", e.getMessage());
+            log.error("loginIdError : {}", e.getMessage());
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
     @PostMapping("/member/update")

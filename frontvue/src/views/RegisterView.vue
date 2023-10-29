@@ -115,11 +115,18 @@ export default {
           userpw: this.userpw,
           usernm: this.usernm,
           useremail: this.useremail,
+          lastupduserid: this.userid,
+          frstinptuserid: this.userid,
         })
         .then((r) => {
           console.log(r);
+          if (r.data === "success") {
+            alert("회원가입이 완료되었습니다.");
+            this.$router.push("/");
+          }
         })
         .catch((e) => {
+          alert("이미 등록된 회원ID 입니다.");
           throw new Error(e);
         });
     },

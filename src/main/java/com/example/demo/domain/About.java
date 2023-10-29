@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class About {
-    private String token;
+//    private String token;
 
     //@GeneratedValue(strategy = GenerationType.IDENTITY) 아이디를 자동생성 안할거라 주석
     private int ser;

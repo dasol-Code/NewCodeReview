@@ -3,14 +3,17 @@ package com.example.demo.service;
 import com.example.demo.domain.About;
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.util.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.SecretKey;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
+@Slf4j
 @Transactional
 @Service
 public class MemberService {
@@ -35,17 +38,21 @@ public class MemberService {
         return memberRepository.findAll();
     }
     //익셉션...
-    public String login(About about){
+    public Map<String,Object> login(@NotNull About about) throws Exception{
+        Map<String,Object> result = new HashMap<>();
         About findUser = memberRepository.findLogin(about.getUserid());
-
         if(findUser == null){
             throw new IllegalStateException("해당 아이디가 존재하지 않습니다.");
         }
-
         if(!findUser.getUserpw().equals(about.getUserpw())){
             throw new IllegalStateException("패스워드가 맞지 않습니다..");
         }
-        return JwtUtil.createJwt(about.getUsernm(), secretKey, expireTime);
+        if(findUser.getUsedyn() == "Y"){
+            throw new IllegalStateException("삭제된 회원입니다.");
+        }
+        result.put("token",JwtUtil.createJwt(about.getUsernm(), secretKey, expireTime));
+        result.put("userRight", findUser.getManageyn());
+        return result;
     }
 
     public void updateMember(About about){
